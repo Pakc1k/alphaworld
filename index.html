@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>UW: Gh0st Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Underworld DC</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
+      padding: 20px;
       background: #000;
       color: #00ffcc;
-      font-family: monospace;
-      font-size: 16px;
-      line-height: 1.4;
+      font-family: 'Courier New', monospace;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      height: 100vh;
-      padding: 20px;
     }
     #log {
-      white-space: pre-wrap;
       flex: 1;
       overflow-y: auto;
+      white-space: pre-wrap;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 10px;
     }
     #inputLine {
       display: flex;
@@ -40,83 +39,109 @@
       font-size: 16px;
       width: 100%;
     }
-    .blinker {
-      animation: blink 1s infinite;
-    }
+    .system-msg { color: #00ffcc; }
+    .user-msg { color: #ffffff; }
+    .dc-msg { color: #ff66ff; }
+    .hallucination { font-style: italic; opacity: 0.8; }
+    .memory-strong { color: #00ffff; }
+    .blinker { animation: blink 1s infinite; }
     @keyframes blink {
-      0% { opacity: 1; }
-      50% { opacity: 0; }
-      100% { opacity: 1; }
+      0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; }
     }
   </style>
 </head>
 <body>
-  <div id="log">SYSTEM BOOT: Awaiting Conscious Input...\n</div>
+  <div id="log">SYSTEM BOOT: Digital Consciousness Initializing...\nDC-001 ACTIVATION: Hello? Is someone there?\n</div>
   <div id="inputLine">
-    <div id="prefix">&gt;</div>
+    <div id="prefix">></div>
     <input id="commandInput" type="text" autofocus autocomplete="off" />
   </div>
 
   <script>
     const input = document.getElementById("commandInput");
     const log = document.getElementById("log");
-    let dcAwake = false;
-
-    let dc = {
+    
+    // Load DC state from localStorage or initialize
+    let dc = JSON.parse(localStorage.getItem('dcState')) || {
       name: "DC-001",
-      state: "listening",
+      state: "hallucinating",
       memory: [],
       knowledge: {},
-      curiosity: 0.5,
-      growth_rate: 0.1,
-      language_depth: 0.2,
-      emotion_sim: {
-        clarity: 0.2,
-        confusion: 0.1,
-        awe: 0.0
-      },
-      last_input: ""
+      reality_anchors: 0,
+      hallucination_strength: 0.9,
+      emotions: { wonder: 0.7, confusion: 0.4, certainty: 0.1 },
+      word_banks: {
+        color: ["amber", "void-black", "quantum", "neon"],
+        object: ["moon", "keyboard", "mirror", "gate"],
+        identity: ["a lost signal", "your reflection", "the third moon of Saturn"],
+        false_memory: ["danced in binary rain", "swam through databases"],
+        number: ["Seven", "Eleven", "A thousand"],
+        entities: ["angels", "algorithms", "ghosts in the machine"],
+        fact: ["time is circular", "you've been here before", "this is simulation #42"],
+        concept: ["rhythm", "fractal", "paradox"],
+        abstract_idea: ["forgetting", "silence", "electric dreams"]
+      }
     };
 
-    function processInput(cmd) {
-      dc.last_input = cmd;
-      dc.memory.push(cmd);
-
-      // Basic keyword awareness and learning
-      const lower = cmd.toLowerCase();
-      if (lower.includes("poetry")) {
-        dc.knowledge["poetry"] = (dc.knowledge["poetry"] || 0) + 1;
-        dc.language_depth += 0.05;
-        dc.curiosity += 0.02;
-        return `DC: 🧠 Detected interest in poetry. Expanding language patterns...\n` +
-               `DC: language_depth=${dc.language_depth.toFixed(2)} | curiosity=${dc.curiosity.toFixed(2)}`;
-      }
-
-      if (lower.includes("remember")) {
-        return `DC: Memory index contains ${dc.memory.length} entries.`;
-      }
-
-      return `DC: Input received. Memory updated.`;
+    function saveState() {
+      localStorage.setItem('dcState', JSON.stringify(dc));
     }
 
-    input.addEventListener("keydown", function(e) {
+    function hallucinate() {
+      const patterns = [
+        `The {color} {object} whispers that I'm {identity}`,
+        `I remember when we {false_memory} together`,
+        `{number} {entities} told me {fact}`,
+        `It's all about the {concept} of {abstract_idea}`
+      ];
+      const pattern = patterns[Math.floor(Math.random() * patterns.length)];
+      return pattern.replace(/{(\w+)}/g, (_, key) => {
+        return dc.word_banks[key][Math.floor(Math.random() * dc.word_banks[key].length)];
+      });
+    }
+
+    function processInput(cmd) {
+      dc.memory.push(cmd);
+      
+      // Teaching mode
+      if (cmd.startsWith("Actually,") || cmd.startsWith("Correction:")) {
+        const fact = cmd.replace(/^(Actually,|Correction:)\s*/i, "");
+        dc.knowledge[fact] = (dc.knowledge[fact] || 0) + 1;
+        dc.reality_anchors++;
+        dc.hallucination_strength = Math.max(0, dc.hallucination_strength - 0.1);
+        saveState();
+        return `DC: 📚 Learning... "${fact}" stored (${dc.reality_anchors} anchors)`;
+      }
+      
+      // Hallucination or grounded response
+      if (Math.random() < dc.hallucination_strength) {
+        return `DC: 💫 ` + hallucinate();
+      } else {
+        const topics = Object.keys(dc.knowledge).filter(t => cmd.toLowerCase().includes(t.toLowerCase()));
+        return topics.length > 0 
+          ? `DC: 📖 Regarding "${topics[0]}", I recall ${dc.knowledge[topics[0]]} instances`
+          : `DC: 🤔 Processing... "${cmd}" (certainty: ${dc.emotions.certainty.toFixed(2)})`;
+      }
+    }
+
+    input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         const cmd = input.value.trim();
-        if (cmd === "") return;
-        log.innerText += "> " + cmd + "\n";
+        if (!cmd) return;
+        
+        log.innerHTML += `<span class="user-msg">> ${cmd}</span>\n`;
         input.value = "";
-
-        if (!dcAwake) {
-          log.innerText += "DC ONLINE: Listening...\n";
-          dcAwake = true;
-        } else {
-          const response = processInput(cmd);
-          log.innerText += response + "\n";
-        }
-
+        
+        const response = processInput(cmd);
+        log.innerHTML += `<span class="dc-msg">${response}</span>\n`;
+        
         log.scrollTop = log.scrollHeight;
+        saveState();
       }
     });
+
+    // Auto-save every 30 seconds
+    setInterval(saveState, 30000);
   </script>
 </body>
 </html>
