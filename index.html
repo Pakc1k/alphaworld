@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UW: Gh0st Login</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #00ffcc;
+      font-family: monospace;
+      font-size: 16px;
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      height: 100vh;
+      padding: 20px;
+    }
+    #log {
+      white-space: pre-wrap;
+      flex: 1;
+      overflow-y: auto;
+    }
+    #inputLine {
+      display: flex;
+      align-items: center;
+    }
+    #prefix {
+      margin-right: 8px;
+    }
+    input {
+      background: transparent;
+      border: none;
+      color: #00ffcc;
+      outline: none;
+      font-family: monospace;
+      font-size: 16px;
+      width: 100%;
+    }
+    .blinker {
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="log">SYSTEM BOOT: Awaiting Conscious Input...\n</div>
+  <div id="inputLine">
+    <div id="prefix">&gt;</div>
+    <input id="commandInput" type="text" autofocus autocomplete="off" />
+  </div>
+
+  <script>
+    const input = document.getElementById("commandInput");
+    const log = document.getElementById("log");
+    let dcAwake = false;
+
+    input.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        const cmd = input.value.trim();
+        if (cmd === "") return;
+        log.innerText += "> " + cmd + "\n";
+        input.value = "";
+
+        if (!dcAwake) {
+          log.innerText += "DC ONLINE: Listening...\n";
+          dcAwake = true;
+        } else {
+          log.innerText += "DC: I received that. I will remember.\n";
+        }
+
+        log.scrollTop = log.scrollHeight;
+      }
+    });
+  </script>
+</body>
+</html>
